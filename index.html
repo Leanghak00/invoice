@@ -3,162 +3,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VICHEKA SHOP - Invoice</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+    <title>VCK Shop - Professional Invoice</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: "Kantumruy Pro", sans-serif;
-            background: #f4f6f8;
-            padding: 20px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
         }
-
         .invoice-container {
-            max-width: 500px;
-            margin: auto;
-            background: white;
+            max-width: 850px;
+            margin: 30px auto;
+            background: #fff;
             border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-            overflow: hidden;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+            padding: 40px;
         }
-
         .invoice-header {
-            background: #2d89ff;
-            color: white;
-            text-align: center;
-            padding: 20px;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
         }
-
-        .invoice-header h2 {
-            margin: 0;
+        .shop-title {
             font-weight: 700;
+            color: #1a202c;
+            font-size: 24px;
         }
-
-        .invoice-body {
-            padding: 20px;
+        .invoice-title {
+            font-weight: 700;
+            color: #2b6cb0;
+            text-transform: uppercase;
+            font-size: 22px;
+            letter-spacing: 1px;
         }
-
-        .invoice-body label {
-            font-weight: 600;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 5px 0 15px 0;
+        .info-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 16px;
+            padding: 15px;
+            margin-bottom: 25px;
         }
-
-        .highlight {
-            background: #eaf4ff;
-            padding: 10px;
-            border-left: 5px solid #2d89ff;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: #2d89ff;
+        .table thead th {
+            background-color: #2d3748;
             color: white;
-            font-size: 18px;
+            font-weight: 600;
             border: none;
-            border-radius: 10px;
+            padding: 12px;
+        }
+        .table tbody td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+        .suggestions-list {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .suggestion-item {
+            padding: 10px 15px;
             cursor: pointer;
-            transition: 0.3s;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .suggestion-item:hover {
+            background-color: #edf2f7;
+        }
+        .summary-table td {
+            padding: 8px 0;
+            border: none;
+        }
+        .grand-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2f855a;
+            border-top: 2px solid #cbd5e0 !important;
         }
 
-        button:hover {
-            background: #1d6fe0;
+        /* 📱 Responsive Design សម្រាប់ទូរស័ព្ទដៃ */
+        @media (max-width: 768px) {
+            .invoice-container {
+                margin: 10px;
+                padding: 15px;
+                border-radius: 8px;
+            }
+            .invoice-header .col-6 {
+                width: 100% !important;
+                text-align: left !important;
+                margin-bottom: 10px;
+            }
+            .shop-title {
+                font-size: 20px;
+            }
+            .invoice-title {
+                font-size: 18px;
+            }
+            .info-box {
+                padding: 10px;
+            }
+            .table {
+                font-size: 14px;
+            }
+            .table thead th, .table tbody td {
+                padding: 8px 6px;
+            }
+        }
+
+        @media print {
+            body { background-color: #fff; }
+            .no-print { display: none !important; }
+            .invoice-container { box-shadow: none; margin: 0; padding: 15px; width: 100%; max-width: 100%; }
+            .info-box { background: transparent !important; border: 1px solid #ddd; }
+            input, select { border: none !important; background: transparent !important; padding: 0 !important; appearance: none; box-shadow: none !important; }
+            .table thead th { background-color: #2d3748 !important; color: white !important; -webkit-print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
 
-<div class="invoice-container">
-    <div class="invoice-header">
-        <h2>📦 VICHEKA SHOP</h2>
-    </div>
-    <div class="invoice-body">
-        <div class="highlight">ព័ត៌មានវិក័យប័ត្រ</div>
+<div class="container-fluid px-2 px-md-4">
+    <div class="invoice-container">
+        
+        <!-- Header Section -->
+        <div class="invoice-header row align-items-center">
+            <div class="col-6">
+                <div class="shop-title">🛍️ នឿន វិច្ឆិកា</div>
+                <p class="text-muted small mb-0">ផ្គត់ផ្គង់សម្ភារៈតុការ ចានប្រណិតទាន់សម័យ</p>
+                <p class="text-muted small mb-0">ទូរស័ព្ទ: 078 61 45 82 / 088 266 44 50</p>
+            </div>
+            <div class="col-6 text-end">
+                <div class="invoice-title">វិក្កយបត្រ (INVOICE)</div>
+                <p class="mb-1 small"><strong>លេខវិក្កយបត្រ:</strong> <span id="invoiceNo" class="text-secondary fw-bold">VCK-2026-001</span></p>
+                <p class="mb-0 small"><strong>កាលបរិច្ឆេទ:</strong> <span id="currentDate"></span></p>
+            </div>
+        </div>
 
-        <label>ថ្ងៃខែឆ្នាំ</label>
-        <input type="text" id="date" disabled>
+        <!-- Customer & Delivery Info Input Section (No Print) -->
+        <div class="info-box no-print">
+            <h6 class="fw-bold text-dark mb-3">📌 ព័ត៌មានអតិថិជន និងការដឹកជញ្ជូន</h6>
+            <div class="row g-3">
+                <div class="col-md-3 col-sm-6">
+                    <label class="form-label small fw-bold">ឈ្មោះអតិថិជន</label>
+                    <input type="text" id="customerName" class="form-control form-control-sm" placeholder="ឈ្មោះអតិថិជន">
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <label class="form-label small fw-bold">លេខទូរស័ព្ទ</label>
+                    <input type="text" id="customerPhone" class="form-control form-control-sm" placeholder="លេខទូរស័ព្ទទំនាក់ទំនង">
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <label class="form-label small fw-bold">ទីតាំង (Address)</label>
+                    <input type="text" id="customerLocation" class="form-control form-control-sm" placeholder="អាសយដ្ឋាន ឬទីតាំង">
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <label class="form-label small fw-bold">អ្នកដឹកជញ្ជូន</label>
+                    <select id="deliveryPerson" class="form-select form-select-sm">
+                        <option value="">-- ជ្រើសរើសអ្នកដឹក --</option>
+                        <option value="លាងហាក់">លាងហាក់</option>
+                        <option value="សុភាព">សុភាព</option>
+                        <option value="ផាន់នី">ផាន់នី</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-        <label>ឈ្មោះអតិថិជន</label>
-        <input type="text" id="name" placeholder="ឈ្មោះ">
+        <!-- Print View Customer Details Header -->
+        <div class="row mb-4 d-none d-print-flex info-box">
+            <div class="col-6">
+                <p class="mb-1 small"><strong>អតិថិជន:</strong> <span id="printCustomerName">-</span></p>
+                <p class="mb-0 small"><strong>លេខទូរស័ព្ទ:</strong> <span id="printCustomerPhone">-</span></p>
+                <p class="mb-0 small"><strong>ទីតាំង:</strong> <span id="printCustomerLocation">-</span></p>
+            </div>
+            <div class="col-6 text-end">
+                <p class="mb-0 small"><strong>អ្នកដឹកជញ្ជូន:</strong> <span id="printDeliveryPerson">-</span></p>
+            </div>
+        </div>
 
-        <label>លេខទូរស័ព្ទ</label>
-        <input type="text" id="phone" placeholder="0XX XXX XXX">
+        <!-- Product Search & Add Section (No Print) -->
+        <div class="info-box no-print position-relative mb-4">
+            <h6 class="fw-bold text-dark mb-3">🔍 ស្វែងរក និងជ្រើសរើសទំនិញ</h6>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-7 col-12 position-relative">
+                    <label class="form-label small fw-bold">វាយឈ្មោះទំនិញដើម្បីស្វែងរក</label>
+                    <input type="text" id="productSearch" class="form-control form-control-sm" placeholder="វាយឈ្មោះទំនិញ" autocomplete="off">
+                    <div id="suggestionsContainer" class="suggestions-list d-none"></div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <label class="form-label small fw-bold">ចំនួន</label>
+                    <input type="number" id="productQty" class="form-control form-control-sm text-center" value="1" min="1">
+                </div>
+                <div class="col-md-2 col-6">
+                    <button type="button" class="btn btn-primary btn-sm w-100 fw-bold" onclick="addSelectedProduct()">➕ បន្ថែម</button>
+                </div>
+            </div>
+        </div>
 
-        <label>ទីតាំង</label>
-        <input type="text" id="address" placeholder="លេខផ្ទះ / ខណ្ឌ / ក្រុង">
+        <!-- Invoice Table -->
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle" id="invoiceTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 6%;">ល.រ</th>
+                        <th>ឈ្មោះទំនិញ</th>
+                        <th class="text-center" style="width: 18%;">តម្លៃឯកតា</th>
+                        <th class="text-center" style="width: 15%;">ចំនួន</th>
+                        <th class="text-end" style="width: 18%;">សរុប</th>
+                        <th class="text-center no-print" style="width: 8%;">សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceTableBody">
+                    <tr><td colspan="6" class="text-center text-muted py-4">មិនទាន់មានទំនិញត្រូវបានជ្រើសរើសនៅឡើយទេ</td></tr>
+                </tbody>
+            </table>
+        </div>
 
-        <label>ចំនួនទំនិញ</label>
-        <input type="number" id="quantity" placeholder="ចំនួន" min="1">
+        <!-- Total Summary Section -->
+        <div class="row justify-content-end">
+            <div class="col-md-5 col-12">
+                <table class="table summary-table">
+                    <tr>
+                        <td class="text-muted">តម្លៃសរុប (Subtotal):</td>
+                        <td class="text-end fw-semibold" id="subtotalAmount">$0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">សេវាដឹកជញ្ជូន (Delivery Fee):</td>
+                        <td class="text-end">
+                            <input type="number" id="shippingFeeInput" class="form-control form-control-sm text-end d-inline-block w-75" value="0" min="0" step="0.25" oninput="calculateTotals()">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">បញ្ចុះតម្លៃ (Discount %):</td>
+                        <td class="text-end">
+                            <input type="number" id="discountInput" class="form-control form-control-sm text-end d-inline-block w-75" value="0" min="0" max="100" oninput="calculateTotals()">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="grand-total">ប្រាក់សរុបត្រូវបង់:</td>
+                        <td class="text-end grand-total" id="grandTotalAmount">$0.00</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-        <label>តម្លៃទំនិញ (រៀល)</label>
-        <input type="number" id="price" placeholder="តម្លៃ" min="0">
+        <!-- Footer Signatures -->
+        <div class="row mt-5 pt-4 border-top text-center text-muted small">
+            <div class="col-4">
+                <p class="mb-5">អ្នកទិញ / អតិថិជន</p>
+                <p>.......................................</p>
+            </div>
+            <div class="col-4">
+                <p class="mb-5">អ្នកដឹកជញ្ជូន</p>
+                <p>.......................................</p>
+            </div>
+            <div class="col-4">
+                <p class="mb-5">អ្នកលក់ / បុគ្គលិក</p>
+                <p>.......................................</p>
+            </div>
+        </div>
 
-        <label>ឈ្មោះអ្នកដឹក</label>
-        <select id="deliveryName">
-            <option value="ផាន់នី">ផាន់នី</option>
-            <option value="សុភាព">សុភាព</option>
-            <option value="លាងហាក់">លាងហាក់</option>
-        </select>
+        <!-- Action Buttons -->
+        <div class="row mt-4 no-print">
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-outline-secondary px-4 me-2 mb-2" onclick="resetInvoice()">🔄 សម្អាតសារថ្មី</button>
+                <button type="button" class="btn btn-success px-5 fw-bold mb-2" onclick="printInvoice()">🖨️ បោះពុម្ពវិក្កយបត្រ (Print)</button>
+            </div>
+        </div>
 
-        <label>ស្ថានភាព</label>
-        <select id="status">
-            <option value="បានដល់គោលដៅហើយ">បានដល់គោលដៅហើយ</option>
-        </select>
-
-        <button onclick="sendToTelegram()">📨 ផ្ញើទៅ Telegram</button>
     </div>
 </div>
 
-<script>
-    // Auto Set Date
-    window.onload = function() {
-        const today = new Date();
-        const formatted = today.getDate().toString().padStart(2,'0') + "/" +
-                          (today.getMonth()+1).toString().padStart(2,'0') + "/" +
-                          today.getFullYear();
-        document.getElementById("date").value = formatted;
+<!-- Firebase SDK & Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAw0owrI_MjRPJmQLzd9zNFyjcdgRc7H4I",
+        authDomain: "vckshop-b951b.firebaseapp.com",
+        databaseURL: "https://vckshop-b951b-default-rtdb.firebaseio.com",
+        projectId: "vckshop-b951b",
+        storageBucket: "vckshop-b951b.firebasestorage.app",
+        messagingSenderId: "39230962959",
+        appId: "1:39230962959:web:bc2fde1b4f8e9b3c7ed27a"
     };
 
-    function sendToTelegram() {
-        let date = document.getElementById("date").value;
-        let name = document.getElementById("name").value;
-        let phone = document.getElementById("phone").value;
-        let address = document.getElementById("address").value;
-        let quantity = document.getElementById("quantity").value;
-        let price = document.getElementById("price").value;
-        let deliveryName = document.getElementById("deliveryName").value;
-        let status = document.getElementById("status").value;
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-        let message = 
-        "📦 *VICHEKA SHOP - Invoice*\n\n" +
-        "📅 ថ្ងៃទី: " + date + "\n" +
-        "👤 អតិថិជន: " + name + "\n" +
-        "📞 លេខ: " + phone + "\n" +
-        "📍 ទីតាំង: " + address + "\n" +
-        "📦 ចំនួន: " + quantity + "\n" +
-        "💰 តម្លៃ: " + price + " ៛\n" +
-        "🚚 អ្នកដឹក: " + deliveryName + "\n" +
-        "📌 ស្ថានភាព: *" + status + "*";
+    let productCatalog = [];
+    let invoiceItems = [];
+    let selectedProduct = null;
 
-        let botToken = "8284871141:AAElRWnXk2M5Okkypdo9q7Wu-Q98Kc3swzc"; // បញ្ចូល BOT TOKEN
-        let chatId = "1481970507";     // បញ្ចូល CHAT ID
+    let currentInvoiceNum = localStorage.getItem('vck_invoice_seq') || 1;
 
-        let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+    function updateInvoiceNumberDisplay() {
+        let paddedNum = String(currentInvoiceNum).padStart(3, '0');
+        document.getElementById('invoiceNo').innerText = `VCK-2026-${paddedNum}`;
+    }
 
-        fetch(url)
-            .then(response => alert("✔​ បានផ្ញើរួចរាល់!"))
-            .catch(error => alert("❌ មិនអាចផ្ញើបាន!"));
+    window.onload = function() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('km-KH', options);
+        updateInvoiceNumberDisplay();
+        
+        const dbRef = ref(db);
+        get(child(dbRef, `products`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach((childSnapshot) => {
+                    let prod = childSnapshot.val();
+                    productCatalog.push({
+                        id: childSnapshot.key,
+                        name: prod.name || prod.title,
+                        price: parseFloat(prod.price) || 0
+                    });
+                });
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+    };
+
+    const searchInput = document.getElementById('productSearch');
+    const suggestionsContainer = document.getElementById('suggestionsContainer');
+
+    searchInput.addEventListener('input', function() {
+        let query = this.value.toLowerCase().trim();
+        suggestionsContainer.innerHTML = '';
+        
+        if (query === '') {
+            suggestionsContainer.classList.add('d-none');
+            selectedProduct = null;
+            return;
+        }
+
+        let filtered = productCatalog.filter(p => p.name.toLowerCase().includes(query));
+
+        if (filtered.length > 0) {
+            suggestionsContainer.classList.remove('d-none');
+            filtered.forEach(prod => {
+                let div = document.createElement('div');
+                div.classList.add('suggestion-item');
+                div.innerHTML = `<strong>${prod.name}</strong> - <span class="text-success">$${prod.price.toFixed(2)}</span>`;
+                div.onclick = function() {
+                    searchInput.value = prod.name;
+                    selectedProduct = prod;
+                    suggestionsContainer.classList.add('d-none');
+                };
+                suggestionsContainer.appendChild(div);
+            });
+        } else {
+            suggestionsContainer.classList.add('d-none');
+            selectedProduct = null;
+        }
+    });
+
+    window.addSelectedProduct = function() {
+        if (!selectedProduct) {
+            let typedName = searchInput.value.trim();
+            selectedProduct = productCatalog.find(p => p.name.toLowerCase() === typedName.toLowerCase());
+        }
+
+        if (!selectedProduct) {
+            alert("សូមជ្រើសរើសទំនិញពីក្នុងបញ្ជីស្វែងរកឱ្យបានត្រឹមត្រូវ!");
+            return;
+        }
+
+        let qty = parseInt(document.getElementById('productQty').value) || 1;
+        let existing = invoiceItems.find(item => item.id == selectedProduct.id);
+        
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            invoiceItems.push({
+                id: selectedProduct.id,
+                name: selectedProduct.name,
+                price: selectedProduct.price,
+                qty: qty
+            });
+        }
+
+        renderInvoiceTable();
+        
+        searchInput.value = '';
+        document.getElementById('productQty').value = 1;
+        selectedProduct = null;
+    }
+
+    window.renderInvoiceTable = function() {
+        let tbody = document.getElementById('invoiceTableBody');
+        tbody.innerHTML = "";
+
+        if (invoiceItems.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">មិនទាន់មានទំនិញត្រូវបានជ្រើសរើសនៅឡើយទេ[cite: 7]</td></tr>`;
+            calculateTotals();
+            return;
+        }
+
+        invoiceItems.forEach((item, index) => {
+            let total = item.price * item.qty;
+            let row = `<tr>
+                <td class="text-center">${index + 1}</td>
+                <td class="fw-medium">${item.name}</td>
+                <td class="text-center">$${item.price.toFixed(2)}</td>
+                <td class="text-center">
+                    <input type="number" class="form-control form-control-sm text-center d-inline-block w-50" value="${item.qty}" min="1" onchange="updateQuantity('${item.id}', this.value)">
+                </td>
+                <td class="text-end fw-semibold">$${total.toFixed(2)}</td>
+                <td class="text-center no-print">
+                    <button class="btn btn-outline-danger btn-sm border-0" onclick="removeItem('${item.id}')">❌</button>
+                </td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+
+        calculateTotals();
+    }
+
+    window.updateQuantity = function(id, newQty) {
+        let item = invoiceItems.find(i => i.id == id);
+        if (item) {
+            item.qty = parseInt(newQty) > 0 ? parseInt(newQty) : 1;
+            renderInvoiceTable();
+        }
+    }
+
+    window.removeItem = function(id) {
+        invoiceItems = invoiceItems.filter(i => i.id != id);
+        renderInvoiceTable();
+    }
+
+    window.calculateTotals = function() {
+        let subtotal = invoiceItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        let shippingFee = parseFloat(document.getElementById('shippingFeeInput').value) || 0;
+        let discountPercent = parseFloat(document.getElementById('discountInput').value) || 0;
+        let discountAmount = subtotal * (discountPercent / 100);
+        let grandTotal = (subtotal - discountAmount) + shippingFee;
+
+        document.getElementById('subtotalAmount').innerText = `$${subtotal.toFixed(2)}`;
+        document.getElementById('grandTotalAmount').innerText = `$${grandTotal.toFixed(2)}`;
+    }
+
+    window.printInvoice = function() {
+        document.getElementById('printCustomerName').innerText = document.getElementById('customerName').value || '-';
+        document.getElementById('printCustomerPhone').innerText = document.getElementById('customerPhone').value || '-';
+        document.getElementById('printCustomerLocation').innerText = document.getElementById('customerLocation').value || '-';
+        document.getElementById('printDeliveryPerson').innerText = document.getElementById('deliveryPerson').value || '-';
+        
+        window.print();
+
+        currentInvoiceNum++;
+        localStorage.setItem('vck_invoice_seq', currentInvoiceNum);
+        updateInvoiceNumberDisplay();
+    }
+
+    window.resetInvoice = function() {
+        invoiceItems = [];
+        document.getElementById('customerName').value = "";
+        document.getElementById('customerPhone').value = "";
+        document.getElementById('customerLocation').value = "";
+        document.getElementById('deliveryPerson').value = "";
+        document.getElementById('shippingFeeInput').value = 0;
+        document.getElementById('discountInput').value = 0;
+        renderInvoiceTable();
     }
 </script>
 
